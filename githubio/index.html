@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>研究実験ページ</title>
+        <link href="https://unpkg.com/jspsych@7.3.2/css/jspsych.css" rel="stylesheet" type="text/css" />
+        <style type="text/css">
+            .jspsych-content.terms ul li {
+                text-align: left;
+            }
+        </style>
+        <script src="https://unpkg.com/jspsych@7.3.2"></script>
+        <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.2"></script>
+        <script src="https://unpkg.com/@jspsych/plugin-image-button-response@1.1.2"></script>
+    </head>
+    <body>
+    </body>
+    <script>
+        const jsPsych = initJsPsych({
+            on_finish: function() {
+                jsPsych.data.displayData();
+            }
+        });
+        const timeline = [
+            {
+                type: jsPsychHtmlButtonResponse,
+                stimulus: `
+                    <p>実験にご協力いただきありがとうございます。</p>
+                    <p>ボタンを押して先へお進みください。</p>`,
+                choices: ['先へ進む'],
+                css_classes: 'welcome'
+            },
+            {
+                type: jsPsychHtmlButtonResponse,
+                stimulus: `
+                    <p>実験に際して、以下のことに同意いただける場合は、ボタンを押して先にお進みください。</p>
+                    <ul>
+                        <li>本実験は、神奈川県立横浜翠嵐高等学校 二年 宮下敦行 が行っております。</li>
+                        <li>実験を通して得たデータは、研究成果の一部として発表される可能性があります。</li>
+                        <li>実験に際して、個人情報は収集しません。</li>
+                    </ul>`,
+                choices: ['同意する'],
+                css_classes: 'terms'
+            }
+        ];
+        jsPsych.run(timeline);
+    </script>
+</html>
