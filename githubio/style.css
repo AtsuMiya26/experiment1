@@ -1,0 +1,19 @@
+.jspsych-content.terms #jspsych-html-button-response-stimulus ul li,
+/* .jspsych-content.mother-tongue .jspsych-survey-html-form-preamble, */
+.jspsych-content.mother-tongue #jspsych-survey-html-form ul li {
+    text-align: left;
+}
+
+/* .jspsych-content.mother-tongue .jspsych-survey-html-form-preamble,
+.jspsych-content.mother-tongue #jspsych-survey-html-form {
+    width: 40vw;
+    min-width: 20em;
+} */
+
+.jspsych-content.mother-tongue #mother-tongue-other-field {
+    background: lightgray;
+}
+
+.jspsych-content.mother-tongue #mother-tongue-other:checked ~ #mother-tongue-other-field {
+    background: unset;
+}
