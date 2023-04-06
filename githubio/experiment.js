@@ -203,7 +203,16 @@ const timeline = [
                     'ペン'
                 ),
                 // マジックペン
-                // Now Here
+                mainRandomTrial(
+                    [
+                        '「書き込む際は油性マジックを使用してください。」',
+                        '「書き込む際は油性のマジックペンを使用してください。」'
+                    ],
+                    [
+                        // Now Here
+                    ],
+                    'ペン'
+                ),
             ]);
             const group2 = shuffle([
                 // ダミーテスト1
