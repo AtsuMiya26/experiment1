@@ -1,19 +1,25 @@
 .jspsych-content.terms #jspsych-html-button-response-stimulus ul li,
-/* .jspsych-content.mother-tongue .jspsych-survey-html-form-preamble, */
 .jspsych-content.mother-tongue #jspsych-survey-html-form ul li {
     text-align: left;
 }
 
-/* .jspsych-content.mother-tongue .jspsych-survey-html-form-preamble,
-.jspsych-content.mother-tongue #jspsych-survey-html-form {
-    width: 40vw;
-    min-width: 20em;
-} */
-
-.jspsych-content.mother-tongue #mother-tongue-other-field {
-    background: lightgray;
+.jspsych-content.q-number #jspsych-html-button-response-stimulus {
+    font-size: 3em;
 }
 
-.jspsych-content.mother-tongue #mother-tongue-other:checked ~ #mother-tongue-other-field {
-    background: unset;
+.jspsych-content.q-number #jspsych-html-button-response-btngroup {
+    display: none;
+}
+
+.jspsych-content.passage .passage-text {
+    font-size: .9em;
+    background-color: beige;
+}
+
+.jspsych-content.is-this-img-sth canvas {
+    display: block;
+    max-width: 60vw;
+    max-height: 60vh;
+    width: auto;
+    height: auto;
 }

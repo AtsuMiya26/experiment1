@@ -4,12 +4,22 @@ const jsPsych = initJsPsych({
     }
 });
 
-const mainRandomTrial = (passages, images, hypernymy) => {
+let qNumber = 1;
+
+const mainRandomTrial = (passages, images, hypernymy, allowToSkipPassage=true) => {
     const res = {
         timeline: [
             {
                 type: jsPsychPreload,
                 images: images
+            },
+            {
+                type: jsPsychHtmlButtonResponse,
+                stimulus: () => `
+                    <p>Q${qNumber++}.</p>`, // インクリメントしつつ、もとの値を返す
+                choices: [''],
+                trial_duration: 2000,
+                css_classes: 'q-number',
             },
             {
                 sample: {
@@ -23,7 +33,7 @@ const mainRandomTrial = (passages, images, hypernymy) => {
                             if (jsPsych.timelineVariable('passage')) {
                                 return `
                                     <p>次の文章をお読みください。</p>
-                                    <p>${jsPsych.timelineVariable('passage')}</p>`;
+                                    <p class="passage-text">${jsPsych.timelineVariable('passage')}</p>`;
                             } else {
                                 return '';
                             }
@@ -33,7 +43,7 @@ const mainRandomTrial = (passages, images, hypernymy) => {
                         css_classes: 'passage'
                     }
                 ],
-                timeline_variables: [null, ...passages].map(p => {
+                timeline_variables: (allowToSkipPassage ? [null, ...passages] : passages).map(p => {
                     return {
                         passage: p
                     }
@@ -46,14 +56,21 @@ const mainRandomTrial = (passages, images, hypernymy) => {
                 choices: ['次へ']
             },
             {
-                type: jsPsychImageButtonResponse,
-                choices: [`「${hypernymy}」だ`, `「${hypernymy}」でない`],
-                prompt: "",
-                timeline: images.map(i => {
-                    return {
-                        stimulus: i
+                timeline: [
+                    {
+                        type: jsPsychImageButtonResponse,
+                        stimulus: jsPsych.timelineVariable('img'),
+                        choices: [`「${hypernymy}」だ`, `「${hypernymy}」でない`],
+                        prompt: "",
+                        css_classes: 'is-this-img-sth'
                     }
-                })
+                ],
+                timeline_variables: images.map(i => {
+                    return {
+                        img: i
+                    }
+                }),
+                randomize_order: true,
             }
         ]
     };
@@ -161,26 +178,71 @@ const timeline = [
         stimulus: `
             <p>ボタンを押すと実験を開始します。</p>`,
         choices: ['開始'],
-        post_trial_gap: 1000,
         css_classes: 'set-out'
     },
-    // ダミーテスト1
-    // マジックペン
-    mainRandomTrial(
-        [
-            // 仮置き
-            'パッセージ１',
-            'パッセージ２'
-        ],
-        [
-            // 仮置き
-            'https://scrapbox.io/assets/img/favicon/apple-touch-icon.png',
-            'https://ja.wikipedia.org/static/images/icons/wikipedia.png'
-        ],
-        'ペン'
-    )
-    // クロスワードパズル
-    // マーカーペン
-    // ダミーテスト2
+    ...(
+        () => {
+            // 要素 2 つの配列にのみ有用
+            // 参照: https://ja.javascript.info/task/shuffle
+            const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
+
+            const group1 = shuffle([
+                // マーカーペン
+                mainRandomTrial(
+                    [
+                        '「来週の授業には、マーカーを持参してください。」',
+                        '「来週の授業には、マーカーペンを持参してください。」'
+                    ],
+                    [
+                        './img/red-ballpoint.png',
+                        './img/marker.png',
+                        './img/mechanical.png',
+                        './img/pencil.png',
+                        './img/ruler.png'
+                    ],
+                    'ペン'
+                ),
+                // マジックペン
+                // Now Here
+            ]);
+            const group2 = shuffle([
+                // ダミーテスト1
+                mainRandomTrial(
+                    [
+                        '「あの店のニンジンは安いですよ。」',
+                        '「あの店のレンコンは安いですよ。」',
+                        '「あの店のチーズは安いですよ。」',
+                        '「あの店のお米は安いですよ。」',
+                        '「あの店のお茶は安いですよ。」',
+                    ],
+                    [
+                        './img/carrot.png',
+                        './img/lotus-root.png',
+                        './img/cheese.png',
+                        './img/rice.png',
+                        './img/tea.png'
+                    ],
+                    '野菜',
+                    false
+                ),
+                // クロスワードパズル
+                mainRandomTrial(
+                    [
+                        '「休日には、クロスワードをよくやっています。」',
+                        '「休日には、クロスワードパズルをよくやっています。」'
+                    ],
+                    [
+                        './img/jigsaw-puzzle.png',
+                        './img/crossword.png',
+                        './img/maze.png',
+                        './img/shogi.png',
+                        './img/blocks.png'
+                    ],
+                    'パズル'
+                )
+            ]);
+            return [group1[0], ...group2, group1[1]];
+        }
+    )(),
 ];
 jsPsych.run(timeline);
