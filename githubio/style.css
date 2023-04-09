@@ -23,3 +23,16 @@
     width: auto;
     height: auto;
 }
+
+.jspsych-content.what-do-you-call-this .jspsych-survey-multi-choice-question {
+    margin: 0;
+}
+
+.jspsych-content.what-do-you-call-this img,
+.jspsych-content.what-do-you-call-this-others img {
+    display: block;
+    max-width: 60vw;
+    max-height: 40vh;
+    width: auto;
+    height: auto;
+}

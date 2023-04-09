@@ -1,3 +1,17 @@
+const shuffle = arr => {
+    // 参照: https://ja.javascript.info/task/shuffle
+    res = [...arr];
+    for (let i = res.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [res[i], res[j]] = [res[j], res[i]];
+    }
+    return res;
+};
+
+const randomElement = arr => {
+    return arr[Math.floor(Math.random() * arr.length)];
+};
+
 const jsPsych = initJsPsych({
     on_finish: function() {
         jsPsych.data.displayData();
@@ -5,13 +19,12 @@ const jsPsych = initJsPsych({
 });
 
 let qNumber = 1;
-
 const mainRandomTrial = (passages, images, hypernymy, allowToSkipPassage=true) => {
     const res = {
         timeline: [
             {
                 type: jsPsychPreload,
-                images: images
+                images: images,
             },
             {
                 type: jsPsychHtmlButtonResponse,
@@ -91,12 +104,12 @@ const timeline = [
     {
         type: jsPsychHtmlButtonResponse,
         stimulus: `
-            <p>実験に際して、以下のことに同意いただける場合は、ボタンを押して先にお進みください。</p>
-            <ul>
-                <li>本実験は、神奈川県立横浜翠嵐高等学校 二年 宮下敦行 が行っております。</li>
-                <li>実験を通して得たデータは、研究成果の一部として発表される可能性があります。</li>
-                <li>実験に際して、個人情報は収集しません。</li>
-            </ul>`,
+        <p>実験に際して、以下のことに同意いただける場合は、ボタンを押して先にお進みください。</p>
+        <ul>
+        <li>本実験は、神奈川県立横浜翠嵐高等学校 二年 宮下敦行 が行っております。</li>
+        <li>実験を通して得たデータは、研究成果の一部として発表される可能性があります。</li>
+        <li>実験に際して、個人情報は収集しません。</li>
+        </ul>`,
         choices: ['同意する'],
         css_classes: 'terms'
     },
@@ -172,20 +185,41 @@ const timeline = [
             }
         ]
     },
+    // 直感で答えてください
+    {
+        type: jsPsychHtmlButtonResponse,
+        stimulus: `
+        <p>実験では、いくつか質問をします。なるべく直感で答えてください。</p>`,
+        choices: ['わかった'],
+    },
     // 実験開始画面
     {
         type: jsPsychHtmlButtonResponse,
         stimulus: `
-            <p>ボタンを押すと実験を開始します。</p>`,
+        <p>ボタンを押すと実験を開始します。</p>`,
         choices: ['開始'],
         css_classes: 'set-out'
     },
+    // メイン
     ...(
         () => {
-            // 要素 2 つの配列にのみ有用
-            // 参照: https://ja.javascript.info/task/shuffle
-            const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
-
+            imgs_ballpoint = shuffle([
+                './img/ballpoint.jpg',
+                './img/ballpoint2.jpg'
+            ]);
+            imgs_mechanical = shuffle([
+                './img/mechanical.jpg',
+                './img/mechanical2.jpg'
+            ]);
+            imgs_pencil = shuffle([
+                './img/pencil.jpg',
+                './img/pencil2.jpg'
+            ]);
+            imgs_ruler = shuffle([
+                './img/ruler.jpg',
+                './img/ruler2.jpg'
+            ]);
+            
             const group1 = shuffle([
                 // マーカーペン
                 mainRandomTrial(
@@ -194,11 +228,11 @@ const timeline = [
                         '「来週の授業には、マーカーペンを持参してください。」'
                     ],
                     [
-                        './img/red-ballpoint.png',
-                        './img/marker.png',
-                        './img/mechanical.png',
-                        './img/pencil.png',
-                        './img/ruler.png'
+                        './img/marker.jpg',
+                        imgs_ballpoint[0],
+                        imgs_mechanical[0],
+                        imgs_pencil[0],
+                        imgs_ruler[0]
                     ],
                     'ペン'
                 ),
@@ -209,11 +243,15 @@ const timeline = [
                         '「書き込む際は油性のマジックペンを使用してください。」'
                     ],
                     [
-                        // Now Here
+                        './img/magic-pen.jpg',
+                        imgs_ballpoint[1],
+                        imgs_mechanical[1],
+                        imgs_pencil[1],
+                        imgs_ruler[1]
                     ],
                     'ペン'
-                ),
-            ]);
+                    ),
+                ]);
             const group2 = shuffle([
                 // ダミーテスト1
                 mainRandomTrial(
@@ -233,10 +271,10 @@ const timeline = [
                     ],
                     '野菜',
                     false
-                ),
-                // クロスワードパズル
-                mainRandomTrial(
-                    [
+                    ),
+                    // クロスワードパズル
+                    mainRandomTrial(
+                        [
                         '「休日には、クロスワードをよくやっています。」',
                         '「休日には、クロスワードパズルをよくやっています。」'
                     ],
@@ -253,5 +291,81 @@ const timeline = [
             return [group1[0], ...group2, group1[1]];
         }
     )(),
+    // 呼び方
+    ...(
+        shuffle([
+            {
+                img: './img/marker.jpg',
+                options: [
+                    'マーカー',
+                    'ラインマーカー',
+                    'マーカーペン',
+                    '蛍光ペン',
+                ]
+            },
+            {
+                img: './img/magic-pen.jpg',
+                options: [
+                    'マジック',
+                    '油性マジック',
+                    'マジックペン',
+                    '油性ペン',
+                ]
+            },
+            {
+                img: './img/crossword.png',
+                options: [
+                    'クロスワード',
+                    'クロスワードパズル',
+                ]
+            },
+        ]).map(e => {
+            options = [
+                ...(shuffle(e.options).map(o => '「' + o + '」')),
+                'その他',
+                `えっ、それ${randomElement(e.options)}だったんですか？！`
+            ];
+            return {
+                timeline: [
+                    {
+                        type: jsPsychSurveyMultiChoice,
+                        questions: [
+                            {
+                                prompt: `
+                                    <img src="${e.img}"/>
+                                    いつも、これを何と呼んでいますか？`,
+                                options: options,
+                                required: true
+                            }
+                        ],
+                        button_label: '次へ',
+                        css_classes: 'what-do-you-call-this'
+                    },
+                    {
+                        conditional_function: () => {
+                            const prevRes = jsPsych.data.get().last(1).values()[0];
+                            return prevRes.response['Q0'] == 'その他';
+                        },
+                        timeline: [
+                            {
+                                type: jsPsychSurveyText,
+                                questions: [
+                                    {
+                                        prompt: `
+                                            <img src="${e.img}"/>
+                                            いつも、これを何と呼んでいますか？`,
+                                        name: 'what-do-you-call-this',
+                                        required: true
+                                    }
+                                ],
+                                button_label: '次へ',
+                                css_classes: 'what-do-you-call-this-others'
+                            }
+                        ]
+                    }
+                ]
+            }
+        })
+    ),
 ];
 jsPsych.run(timeline);
