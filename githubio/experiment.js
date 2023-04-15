@@ -12,11 +12,15 @@ const randomElement = arr => {
     return arr[Math.floor(Math.random() * arr.length)];
 };
 
-const jsPsych = initJsPsych({
-    on_finish: function() {
-        jsPsych.data.displayData();
-    }
-});
+const sendToGoogleForm = (value, formId, entryId, rootElement = document.body) => {
+    const form_iframe = document.createElement("iframe");
+    form_iframe.src = encodeURI(
+        `https://docs.google.com/forms/d/e/${formId}/formResponse?entry.${entryId}=${value}&submit=Submit`);
+    form_iframe.style.display = "none";
+    rootElement.appendChild(form_iframe);
+}
+
+const jsPsych = initJsPsych();
 
 let qNumber = 1;
 const mainRandomTrial = (passages, images, hypernymy, allowToSkipPassage=true) => {
@@ -28,8 +32,7 @@ const mainRandomTrial = (passages, images, hypernymy, allowToSkipPassage=true) =
             },
             {
                 type: jsPsychHtmlButtonResponse,
-                stimulus: () => `
-                    <p>Q${qNumber++}.</p>`, // インクリメントしつつ、もとの値を返す
+                stimulus: () => `<p>Q${qNumber++}.</p>`, // インクリメントしつつ、もとの値を返す
                 choices: [''],
                 trial_duration: 2000,
                 css_classes: 'q-number',
@@ -44,9 +47,9 @@ const mainRandomTrial = (passages, images, hypernymy, allowToSkipPassage=true) =
                         type: jsPsychHtmlButtonResponse,
                         stimulus: () => {
                             if (jsPsych.timelineVariable('passage')) {
-                                return `
-                                    <p>次の文章をお読みください。</p>
-                                    <p class="passage-text">${jsPsych.timelineVariable('passage')}</p>`;
+                                return (
+                                    '<p>次の文章をお読みください。</p>' +
+                                    `<p class="passage-text">${jsPsych.timelineVariable('passage')}</p>`);
                             } else {
                                 return '';
                             }
@@ -64,8 +67,7 @@ const mainRandomTrial = (passages, images, hypernymy, allowToSkipPassage=true) =
             },
             {
                 type: jsPsychHtmlButtonResponse,
-                stimulus: `
-                    <p>次に画像をお見せします。「${hypernymy}」を選んでください。</p>`,
+                stimulus: `<p>次に画像をお見せします。「${hypernymy}」を選んでください。</p>`,
                 choices: ['次へ']
             },
             {
@@ -94,22 +96,22 @@ const timeline = [
     // 初期画面
     {
         type: jsPsychHtmlButtonResponse,
-        stimulus: `
-            <p>実験にご協力いただきありがとうございます。</p>
-            <p>ボタンを押して先へお進みください。</p>`,
+        stimulus:
+            '<p>実験にご協力いただきありがとうございます。</p>' +
+            '<p>ボタンを押して先へお進みください。</p>',
         choices: ['先へ進む'],
         css_classes: 'welcome'
     },
     // 諸注意
     {
         type: jsPsychHtmlButtonResponse,
-        stimulus: `
-        <p>実験に際して、以下のことに同意いただける場合は、ボタンを押して先にお進みください。</p>
-        <ul>
-        <li>本実験は、神奈川県立横浜翠嵐高等学校 二年 宮下敦行 が行っております。</li>
-        <li>実験を通して得たデータは、研究成果の一部として発表される可能性があります。</li>
-        <li>実験に際して、個人情報は収集しません。</li>
-        </ul>`,
+        stimulus:
+            '<p>実験に際して、以下のことに同意いただける場合は、ボタンを押して先にお進みください。</p>' +
+            '<ul>' +
+                '<li>本実験は、神奈川県立横浜翠嵐高等学校 二年 宮下敦行 が行っております。</li>' +
+                '<li>実験を通して得たデータは、研究成果の一部として発表される可能性があります。</li>' +
+                '<li>実験に際して、個人情報は収集しません。</li>' +
+            '</ul>',
         choices: ['同意する'],
         css_classes: 'terms'
     },
@@ -188,15 +190,13 @@ const timeline = [
     // 直感で答えてください
     {
         type: jsPsychHtmlButtonResponse,
-        stimulus: `
-        <p>実験では、いくつか質問をします。なるべく直感で答えてください。</p>`,
+        stimulus: '<p>実験では、いくつか質問をします。なるべく直感で答えてください。</p>',
         choices: ['わかった'],
     },
     // 実験開始画面
     {
         type: jsPsychHtmlButtonResponse,
-        stimulus: `
-        <p>ボタンを押すと実験を開始します。</p>`,
+        stimulus: '<p>ボタンを押すと実験を開始します。</p>',
         choices: ['開始'],
         css_classes: 'set-out'
     },
@@ -331,9 +331,8 @@ const timeline = [
                         type: jsPsychSurveyMultiChoice,
                         questions: [
                             {
-                                prompt: `
-                                    <img src="${e.img}"/>
-                                    いつも、これを何と呼んでいますか？`,
+                                prompt:
+                                    `<img src="${e.img}"/>いつも、これを何と呼んでいますか？`,
                                 options: options,
                                 required: true
                             }
@@ -351,9 +350,7 @@ const timeline = [
                                 type: jsPsychSurveyText,
                                 questions: [
                                     {
-                                        prompt: `
-                                            <img src="${e.img}"/>
-                                            いつも、これを何と呼んでいますか？`,
+                                        prompt: `<img src="${e.img}"/>いつも、これを何と呼んでいますか？`,
                                         name: 'what-do-you-call-this',
                                         required: true
                                     }
@@ -367,5 +364,24 @@ const timeline = [
             }
         })
     ),
+    // 送信, 終了画面
+    {
+        on_start: () => { // 送信. 文字数が多すぎると弾かれるため、区切って送信する。
+            const data = jsPsych.data.get().json();
+            const timestamp = Date.now();
+            const rand = Math.random();
+            data.match(/.{1,1000}/g).forEach((d, i) => {
+                dataIdentifier = `/*${timestamp}${(rand+'').match(/0(.*)/)[1]}.${i}*/`;
+                sendToGoogleForm(
+                    dataIdentifier + d,
+                    '1FAIpQLScU9J3TMn3Vuz-qCN-CWjpyGdip3qAgqYSgfgNFbivzqxAlfw',
+                    '933711398');
+            });
+        },
+        type: jsPsychHtmlButtonResponse,
+        stimulus: '<p>実験は以上になります。</p><p>ご協力いただきありがとうございました。</p>',
+        choices: [''],
+        css_classes: 'finish'
+    },
 ];
 jsPsych.run(timeline);

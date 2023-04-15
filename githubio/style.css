@@ -36,3 +36,7 @@
     width: auto;
     height: auto;
 }
+
+.jspsych-content.finish #jspsych-html-button-response-btngroup {
+    display: none;
+}
