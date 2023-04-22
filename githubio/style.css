@@ -1,0 +1,42 @@
+.jspsych-content.terms #jspsych-html-button-response-stimulus ul li,
+.jspsych-content.mother-tongue #jspsych-survey-html-form ul li {
+    text-align: left;
+}
+
+.jspsych-content.q-number #jspsych-html-button-response-stimulus {
+    font-size: 3em;
+}
+
+.jspsych-content.q-number #jspsych-html-button-response-btngroup {
+    display: none;
+}
+
+.jspsych-content.passage .passage-text {
+    font-size: .9em;
+    background-color: beige;
+}
+
+.jspsych-content.is-this-img-sth canvas {
+    display: block;
+    max-width: 60vw;
+    max-height: 60vh;
+    width: auto;
+    height: auto;
+}
+
+.jspsych-content.what-do-you-call-this .jspsych-survey-multi-choice-question {
+    margin: 0;
+}
+
+.jspsych-content.what-do-you-call-this img,
+.jspsych-content.what-do-you-call-this-others img {
+    display: block;
+    max-width: 60vw;
+    max-height: 40vh;
+    width: auto;
+    height: auto;
+}
+
+.jspsych-content.finish #jspsych-html-button-response-btngroup {
+    display: none;
+}
