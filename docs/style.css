@@ -1,3 +1,13 @@
+/* テスト中 */
+body::before {
+    content: 'このページは現在テスト中です。まだ回答なさらないようにお願いいたします。';
+    text-align: center;
+    background: #ffaaaa;
+    display: block;
+    padding: 50vh 1rem;
+}
+/* テスト中: ここまで */
+
 .jspsych-content.terms #jspsych-html-button-response-stimulus ul li,
 .jspsych-content.mother-tongue #jspsych-survey-html-form ul li {
     text-align: left;
