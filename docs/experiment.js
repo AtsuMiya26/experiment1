@@ -35,6 +35,7 @@ const mainRandomTrial = (passages, images, hypernymy, allowToSkipPassage=true) =
                 stimulus: () => `<p>Q${qNumber++}.</p>`, // インクリメントしつつ、もとの値を返す
                 choices: [''],
                 trial_duration: 2000,
+                post_trial_gap: 500,
                 css_classes: 'q-number',
             },
             {
@@ -56,6 +57,7 @@ const mainRandomTrial = (passages, images, hypernymy, allowToSkipPassage=true) =
                         },
                         choices: ['次へ'],
                         trial_duration: () => jsPsych.timelineVariable('passage') ? null : 0,
+                        post_trial_gap: 500,
                         css_classes: 'passage'
                     }
                 ],
@@ -68,16 +70,18 @@ const mainRandomTrial = (passages, images, hypernymy, allowToSkipPassage=true) =
             {
                 type: jsPsychHtmlButtonResponse,
                 stimulus: `<p>次に画像をお見せします。「${hypernymy}」を選んでください。</p>`,
-                choices: ['次へ']
+                choices: ['次へ'],
+                post_trial_gap: 500,
             },
             {
                 timeline: [
                     {
                         type: jsPsychImageButtonResponse,
                         stimulus: jsPsych.timelineVariable('img'),
-                        choices: [`「${hypernymy}」だ`, `「${hypernymy}」でない`],
+                        choices: [`「${hypernymy}」である`, 'どちらともいえない', `「${hypernymy}」でない`],
                         prompt: "",
-                        css_classes: 'is-this-img-sth'
+                        css_classes: 'is-this-img-sth',
+                        post_trial_gap: 500
                     }
                 ],
                 timeline_variables: images.map(i => {
@@ -292,6 +296,13 @@ const timeline = [
         }
     )(),
     // 呼び方
+    {
+        type: jsPsychHtmlButtonResponse,
+        stimulus:
+            '<p>次のかんたんなアンケートにもご協力ください。</p>',
+        choices: ['次へ'],
+        css_classes: 'terms'
+    },
     ...(
         shuffle([
             {
@@ -323,7 +334,7 @@ const timeline = [
             options = [
                 ...(shuffle(e.options).map(o => '「' + o + '」')),
                 'その他',
-                `えっ、それ${randomElement(e.options)}だったんですか？！`
+                `さっきこの画像を見たときは${randomElement(e.options)}だと分からなかった`
             ];
             return {
                 timeline: [
