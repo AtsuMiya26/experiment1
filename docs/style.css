@@ -18,6 +18,7 @@
 
 .jspsych-content.is-this-img-sth canvas {
     display: block;
+    margin: 0 auto !important;
     max-width: 60vw;
     max-height: 60vh;
     width: auto;
