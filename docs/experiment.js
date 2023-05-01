@@ -57,7 +57,7 @@ const mainRandomTrial = (passages, images, hypernymy, allowToSkipPassage=true) =
                         },
                         choices: ['次へ'],
                         trial_duration: () => jsPsych.timelineVariable('passage') ? null : 0,
-                        post_trial_gap: 500,
+                        post_trial_gap: () => jsPsych.timelineVariable('passage') ? 500 : 0,
                         css_classes: 'passage'
                     }
                 ],
@@ -209,19 +209,18 @@ const timeline = [
         () => {
             imgs_ballpoint = shuffle([
                 './img/ballpoint.jpg',
-                './img/ballpoint2.jpg'
-            ]);
-            imgs_mechanical = shuffle([
-                './img/mechanical.jpg',
-                './img/mechanical2.jpg'
+                './img/ballpoint2.jpg',
+                './img/ballpoint3.jpg'
             ]);
             imgs_pencil = shuffle([
                 './img/pencil.jpg',
-                './img/pencil2.jpg'
+                './img/pencil2.jpg',
+                './img/pencil3.jpg'
             ]);
             imgs_ruler = shuffle([
                 './img/ruler.jpg',
-                './img/ruler2.jpg'
+                './img/ruler2.jpg',
+                './img/ruler3.jpg'
             ]);
             
             const group1 = shuffle([
@@ -234,7 +233,6 @@ const timeline = [
                     [
                         './img/marker.jpg',
                         imgs_ballpoint[0],
-                        imgs_mechanical[0],
                         imgs_pencil[0],
                         imgs_ruler[0]
                     ],
@@ -249,15 +247,28 @@ const timeline = [
                     [
                         './img/magic-pen.jpg',
                         imgs_ballpoint[1],
-                        imgs_mechanical[1],
                         imgs_pencil[1],
                         imgs_ruler[1]
                     ],
                     'ペン'
-                    ),
-                ]);
+                ),
+                // シャーペン
+                mainRandomTrial(
+                    [
+                        '「記入にはシャーペンが適しています。」',
+                        '「記入にはシャープペンシルが適しています。」'
+                    ],
+                    [
+                        './img/mechanical.jpg',
+                        imgs_ballpoint[2],
+                        imgs_pencil[2],
+                        imgs_ruler[2]
+                    ],
+                    'ペン'
+                ),
+            ]);
             const group2 = shuffle([
-                // ダミーテスト1
+                // ダミーテスト
                 mainRandomTrial(
                     [
                         '「あの店のニンジンは安いですよ。」',
@@ -292,7 +303,7 @@ const timeline = [
                     'パズル'
                 )
             ]);
-            return [group1[0], ...group2, group1[1]];
+            return [group1[0], group2[0], group1[1], group2[1], group1[2]];
         }
     )(),
     // 呼び方
@@ -308,33 +319,35 @@ const timeline = [
             {
                 img: './img/marker.jpg',
                 options: [
-                    'マーカー',
-                    'ラインマーカー',
-                    'マーカーペン',
-                    '蛍光ペン',
+                    'マーカー', 'マーカーペン', // メインの2つ
+                    'ラインマーカー', '蛍光ペン',
                 ]
             },
             {
                 img: './img/magic-pen.jpg',
                 options: [
-                    'マジック',
-                    '油性マジック',
-                    'マジックペン',
-                    '油性ペン',
+                    'マジック', 'マジックペン', // メインの2つ
+                    '油性マジック', '油性ペン',
+                ]
+            },
+            {
+                img: './img/mechanical.jpg',
+                options: [
+                    'シャーペン', 'シャープペンシル', // メインの2つ
+                    'シャープ', 'シャープペン',
                 ]
             },
             {
                 img: './img/crossword.png',
                 options: [
-                    'クロスワード',
-                    'クロスワードパズル',
+                    'クロスワード', 'クロスワードパズル', // メインの2つ
                 ]
             },
         ]).map(e => {
             options = [
                 ...(shuffle(e.options).map(o => '「' + o + '」')),
                 'その他',
-                `さっきこの画像を見たときは${randomElement(e.options)}だと分からなかった`
+                `さっきこの画像を見たときは${randomElement(e.options.slice(0,2))}だと分からなかった`
             ];
             return {
                 timeline: [
