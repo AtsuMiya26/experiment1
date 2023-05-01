@@ -398,8 +398,8 @@ const timeline = [
                 dataIdentifier = `/*${timestamp}${(rand+'').match(/0(.*)/)[1]}.${i}*/`;
                 sendToGoogleForm(
                     dataIdentifier + d,
-                    '1FAIpQLScU9J3TMn3Vuz-qCN-CWjpyGdip3qAgqYSgfgNFbivzqxAlfw',
-                    '933711398');
+                    '1FAIpQLScweJfzkwMG7PWx5y6x75cshrbacPw5yR_MRPX3e9YqOK5NIQ',
+                    '810714255');
             });
         },
         type: jsPsychHtmlButtonResponse,
